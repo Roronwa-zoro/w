@@ -1,0 +1,643 @@
+{% extends "base.html" %}
+
+{% block title %}الرئيسية - تطبيق المشفى{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">الصفحة الرئيسية</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>معلومات المستخدم</h4>
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>اسم المستخدم:</strong></td>
+                                <td>{{ username }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>نوع الحساب:</strong></td>
+                                <td>
+                                    <span class="badge bg-{{ 'danger' if account_type == 'admin' else 'primary' }}">
+                                        {{ account_type.title() }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>الوصول السريع</h4>
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">تسجيل الخروج</a>
+                            {% if account_type == 'admin' %}
+                            <a href="{{ url_for('register') }}" class="btn btn-outline-primary">تسجيل حساب جديد</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Display Tabs -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">الجداول والصور</h4>
+            </div>
+            <div class="card-body">
+                <!-- Image Tab Navigation -->
+                <ul class="nav nav-tabs" id="imageTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="duty-schedule-tab" data-bs-toggle="tab" data-bs-target="#duty-schedule" type="button" role="tab">
+                            جدول المناوبات
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upcoming-operations-tab" data-bs-toggle="tab" data-bs-target="#upcoming-operations" type="button" role="tab">
+                            جدول العمليات اللاحقة
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Image Tab Content -->
+                <div class="tab-content" id="imageTabsContent">
+                    <!-- Duty Schedule Tab -->
+                    <div class="tab-pane fade show active" id="duty-schedule" role="tabpanel">
+                        <div class="mt-3">
+                            {% if duty_schedule_image %}
+                                <div class="text-center">
+                                    <img src="{{ url_for('uploaded_file', filename=duty_schedule_image[0]) }}" 
+                                         class="img-fluid" 
+                                         alt="جدول المناوبات"
+                                         style="max-height: 600px; border: 1px solid #dee2e6; border-radius: 0.375rem;">
+                                    <p class="text-muted mt-2">
+                                        <small>آخر تحديث: {{ duty_schedule_image[2] }}</small>
+                                    </p>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <p class="text-muted">لا توجد صورة لجدول المناوبات.</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if account_type == 'admin' %}
+                            <div class="mt-3">
+                                <form method="POST" action="{{ url_for('upload_image') }}" enctype="multipart/form-data" class="d-flex gap-2">
+                                    <input type="hidden" name="image_type" value="duty_schedule">
+                                    <input type="file" class="form-control" name="image" accept="image/*" required>
+                                    <button type="submit" class="btn btn-primary">رفع صورة جديدة</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Operations Tab -->
+                    <div class="tab-pane fade" id="upcoming-operations" role="tabpanel">
+                        <div class="mt-3">
+                            {% if upcoming_operations_image %}
+                                <div class="text-center">
+                                    <img src="{{ url_for('uploaded_file', filename=upcoming_operations_image[0]) }}" 
+                                         class="img-fluid" 
+                                         alt="جدول العمليات اللاحقة"
+                                         style="max-height: 600px; border: 1px solid #dee2e6; border-radius: 0.375rem;">
+                                    <p class="text-muted mt-2">
+                                        <small>آخر تحديث: {{ upcoming_operations_image[2] }}</small>
+                                    </p>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <p class="text-muted">لا توجد صورة لجدول العمليات اللاحقة.</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if account_type == 'admin' %}
+                            <div class="mt-3">
+                                <form method="POST" action="{{ url_for('upload_image') }}" enctype="multipart/form-data" class="d-flex gap-2">
+                                    <input type="hidden" name="image_type" value="upcoming_operations">
+                                    <input type="file" class="form-control" name="image" accept="image/*" required>
+                                    <button type="submit" class="btn btn-primary">رفع صورة جديدة</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Display Tabs -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">الجداول والصور</h4>
+            </div>
+            <div class="card-body">
+                <!-- Image Tab Navigation -->
+                <ul class="nav nav-tabs" id="imageTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="duty-schedule-tab" data-bs-toggle="tab" data-bs-target="#duty-schedule" type="button" role="tab">
+                            جدول المناوبات
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upcoming-operations-tab" data-bs-toggle="tab" data-bs-target="#upcoming-operations" type="button" role="tab">
+                            جدول العمليات اللاحقة
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Image Tab Content -->
+                <div class="tab-content" id="imageTabsContent">
+                    <!-- Duty Schedule Tab -->
+                    <div class="tab-pane fade show active" id="duty-schedule" role="tabpanel">
+                        <div class="mt-3">
+                            {% if duty_schedule_image %}
+                                <div class="text-center mb-3">
+                                    <img src="{{ url_for('uploaded_file', filename=duty_schedule_image[0]) }}" 
+                                         class="img-fluid" 
+                                         style="max-height: 600px; border: 1px solid #ddd; border-radius: 8px;"
+                                         alt="جدول المناوبات">
+                                    <p class="text-muted mt-2">
+                                        <small>آخر تحديث: {{ duty_schedule_image[2] }}</small>
+                                    </p>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <p class="text-muted">لا توجد صورة لجدول المناوبات</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if account_type == 'admin' %}
+                            <div class="mt-3">
+                                <form method="POST" action="{{ url_for('upload_image') }}" enctype="multipart/form-data" class="d-flex gap-2">
+                                    <input type="hidden" name="image_type" value="duty_schedule">
+                                    <input type="file" name="image" class="form-control" accept="image/*" required>
+                                    <button type="submit" class="btn btn-primary">رفع صورة جديدة</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Operations Tab -->
+                    <div class="tab-pane fade" id="upcoming-operations" role="tabpanel">
+                        <div class="mt-3">
+                            {% if upcoming_operations_image %}
+                                <div class="text-center mb-3">
+                                    <img src="{{ url_for('uploaded_file', filename=upcoming_operations_image[0]) }}" 
+                                         class="img-fluid" 
+                                         style="max-height: 600px; border: 1px solid #ddd; border-radius: 8px;"
+                                         alt="جدول العمليات اللاحقة">
+                                    <p class="text-muted mt-2">
+                                        <small>آخر تحديث: {{ upcoming_operations_image[2] }}</small>
+                                    </p>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <p class="text-muted">لا توجد صورة لجدول العمليات اللاحقة</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if account_type == 'admin' %}
+                            <div class="mt-3">
+                                <form method="POST" action="{{ url_for('upload_image') }}" enctype="multipart/form-data" class="d-flex gap-2">
+                                    <input type="hidden" name="image_type" value="upcoming_operations">
+                                    <input type="file" name="image" class="form-control" accept="image/*" required>
+                                    <button type="submit" class="btn btn-primary">رفع صورة جديدة</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patients Management with Tabs -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">متابعة المرضى</h4>
+                    <div class="d-flex align-items-center gap-2">
+                        {% if account_type == 'admin' %}
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+                            اضافة مريض
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Doctor Filter -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <form method="GET" class="d-flex gap-2">
+                            <select name="doctor" class="form-select" onchange="this.form.submit()">
+                                <option value="">كل الأخصائيين</option>
+                                {% for doctor in doctors %}
+                                <option value="{{ doctor }}" {% if selected_doctor == doctor %}selected{% endif %}>
+                                    {{ doctor }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% if selected_doctor %}
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Clear Filter</a>
+                            {% endif %}
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-end">
+                            <small class="text-muted">
+                                {% if selected_doctor %}
+                                    عرض مرضى الأخصائي: <strong>{{ selected_doctor }}</strong>
+                                {% else %}
+                                    عرض جميع المرضى
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Doctor Color Legend -->
+                {% if doctors %}
+                <div class="mt-3">
+                    <small class="text-muted">لون اسم الطبيب:</small>
+                    <div class="d-flex flex-wrap gap-2 mt-1">
+                        {% for doctor in doctors %}
+                        <span class="badge doctor-badge" style="background-color: {{ get_doctor_color(doctor, 'dark') }}; color: white;">
+                            {{ doctor }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if patients %}
+
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="all-patients-tab" data-bs-toggle="tab" data-bs-target="#all-patients" type="button" role="tab">
+                            جميع المرضى
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="surgery-not-prepared-tab" data-bs-toggle="tab" data-bs-target="#surgery-not-prepared" type="button" role="tab">
+                            ضمن قسمنا - غير محضر للجراحة
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="non-surgery-not-prepared-tab" data-bs-toggle="tab" data-bs-target="#non-surgery-not-prepared" type="button" role="tab">
+                            خارج قسمنا - غير محضر للجراحة
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="prepared-tab" data-bs-toggle="tab" data-bs-target="#prepared" type="button" role="tab">
+                            محضر للجراحة
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="patientTabsContent">
+                    <!-- All Patients Tab -->
+                    <div class="tab-pane fade show active" id="all-patients" role="tabpanel">
+                        {% include 'patient_table.html' %}
+                    </div>
+
+                    <!-- Surgery - Not Prepared Tab -->
+                    <div class="tab-pane fade" id="surgery-not-prepared" role="tabpanel">
+                        {% set surgery_not_prepared = [] %}
+                        {% for patient in patients %}
+                            {% if patient[7] and not patient[8] %}
+                                {% set _ = surgery_not_prepared.append(patient) %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if surgery_not_prepared %}
+                            {% set filtered_patients = surgery_not_prepared %}
+                            {% include 'patient_table.html' %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted">لا يوجد مرضى بقسمنا غير محضرين للجراحة.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Non-Surgery - Not Prepared Tab -->
+                    <div class="tab-pane fade" id="non-surgery-not-prepared" role="tabpanel">
+                        {% set non_surgery_not_prepared = [] %}
+                        {% for patient in patients %}
+                            {% if not patient[7] and not patient[8] %}
+                                {% set _ = non_surgery_not_prepared.append(patient) %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if non_surgery_not_prepared %}
+                            {% set filtered_patients = non_surgery_not_prepared %}
+                            {% include 'patient_table.html' %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted">لا يوجد مرضى خارج قسمنا غير محضرين للجراحة.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Prepared Tab -->
+                    <div class="tab-pane fade" id="prepared" role="tabpanel">
+                        {% set prepared_patients = [] %}
+                        {% for patient in patients %}
+                            {% if patient[8] %}
+                                {% set _ = prepared_patients.append(patient) %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if prepared_patients %}
+                            {% set filtered_patients = prepared_patients %}
+                            {% include 'patient_table.html' %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted">لا يوجد مرضى محضرين للجراحة.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted">لا يوجد مرضى.</p>
+                    {% if account_type == 'admin' %}
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+                        اضافة أول مريض
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Logs -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">آخر التعديلات</h4>
+            </div>
+            <div class="card-body">
+                {% if logs %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>التعديل</th>
+                                <th>الجدول</th>
+                                <th>الرقم</th>
+                                <th>المستخدم</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if log[0] == 'CREATE' else 'warning' if log[0] == 'UPDATE' else 'danger' }}">
+                                        {{ log[0] }}
+                                    </span>
+                                </td>
+                                <td>{{ log[1] }}</td>
+                                <td>{{ log[2] or 'N/A' }}</td>
+                                <td>{{ log[4] }}</td>
+                                <td>{{ log[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">لا يوجد تعديلات سابقة.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Patient Modal (Admin Only) -->
+{% if account_type == 'admin' %}
+<div class="modal fade" id="addPatientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">اضافة مريض جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_patient') }}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="full_name" class="form-label">الاسم الكامل *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="age" class="form-label">العمر *</label>
+                            <input type="number" class="form-control" id="age" name="age" required min="0" max="150">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="diagnosis" class="form-label">التشخيص *</label>
+                            <input type="text" class="form-control" id="diagnosis" name="diagnosis" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="entry_date" class="form-label">تاريخ الدخول *</label>
+                            <input type="date" class="form-control" id="entry_date" name="entry_date" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">الحالة *</label>
+                            <input type="text" class="form-control" id="status" name="status" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="doctor_name" class="form-label">اسم الأخصائي *</label>
+                            <input type="text" class="form-control" id="doctor_name" name="doctor_name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_in_surgery_section" name="is_in_surgery_section">
+                                <label class="form-check-label" for="is_in_surgery_section">
+                                    صمن قسمنا
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_prepared" name="is_prepared">
+                                <label class="form-check-label" for="is_prepared">
+                                    محضر للجراحة
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">الغاء</button>
+                    <button type="submit" class="btn btn-primary">اضافة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Patient Modal -->
+<div class="modal fade" id="editPatientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تعديل مريض</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="editPatientForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_full_name" class="form-label">الاسم الكامل *</label>
+                            <input type="text" class="form-control" id="edit_full_name" name="full_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_age" class="form-label">العمر *</label>
+                            <input type="number" class="form-control" id="edit_age" name="age" required min="0" max="150">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_diagnosis" class="form-label">التشخيص *</label>
+                            <input type="text" class="form-control" id="edit_diagnosis" name="diagnosis" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_entry_date" class="form-label">تاريخ الدخول *</label>
+                            <input type="date" class="form-control" id="edit_entry_date" name="entry_date" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_status" class="form-label">الحالة *</label>
+                            <input type="text" class="form-control" id="edit_status" name="status" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_doctor_name" class="form-label">اسم الأخصائي *</label>
+                            <input type="text" class="form-control" id="edit_doctor_name" name="doctor_name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edit_is_in_surgery_section" name="is_in_surgery_section">
+                                <label class="form-check-label" for="edit_is_in_surgery_section">
+                                    ضمن قسمنا
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edit_is_prepared" name="is_prepared">
+                                <label class="form-check-label" for="edit_is_prepared">
+                                    محضر للجراحة
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">الغاء</button>
+                    <button type="submit" class="btn btn-primary">تعديل</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function editPatient(id, fullName, age, diagnosis, entryDate, status, doctorName, inSurgery, prepared) {
+    document.getElementById('edit_full_name').value = fullName;
+    document.getElementById('edit_age').value = age;
+    document.getElementById('edit_diagnosis').value = diagnosis;
+    document.getElementById('edit_entry_date').value = entryDate;
+    document.getElementById('edit_status').value = status;
+    document.getElementById('edit_doctor_name').value = doctorName;
+    document.getElementById('edit_is_in_surgery_section').checked = inSurgery;
+    document.getElementById('edit_is_prepared').checked = prepared;
+    
+    document.getElementById('editPatientForm').action = '/edit_patient/' + id;
+    
+    new bootstrap.Modal(document.getElementById('editPatientModal')).show();
+}
+
+// Set today's date as default for entry date
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('entry_date').value = today;
+});
+
+// Quick action functions
+function prepareAllUnprepared() {
+    if (confirm('Are you sure you want to mark all unprepared patients as prepared?')) {
+        // Get all unprepared patients
+        const unpreparedButtons = document.querySelectorAll('a[href*="toggle_prepared"]');
+        const unpreparedLinks = Array.from(unpreparedButtons).filter(btn => 
+            btn.textContent.includes('✓ Prepare')
+        );
+        
+        if (unpreparedLinks.length === 0) {
+            alert('No unprepared patients found.');
+            return;
+        }
+        
+        // Process each unprepared patient
+        let processed = 0;
+        unpreparedLinks.forEach((link, index) => {
+            setTimeout(() => {
+                window.open(link.href, '_self');
+            }, index * 100); // Small delay between requests
+        });
+    }
+}
+
+function unprepareAllPrepared() {
+    if (confirm('Are you sure you want to mark all prepared patients as unprepared?')) {
+        // Get all prepared patients
+        const preparedButtons = document.querySelectorAll('a[href*="toggle_prepared"]');
+        const preparedLinks = Array.from(preparedButtons).filter(btn => 
+            btn.textContent.includes('✗ Unprepare')
+        );
+        
+        if (preparedLinks.length === 0) {
+            alert('No prepared patients found.');
+            return;
+        }
+        
+        // Process each prepared patient
+        let processed = 0;
+        preparedLinks.forEach((link, index) => {
+            setTimeout(() => {
+                window.open(link.href, '_self');
+            }, index * 100); // Small delay between requests
+        });
+    }
+}
+</script>
+{% endblock %}

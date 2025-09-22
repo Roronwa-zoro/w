@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Flask App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center mb-0">Register</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                        <div class="form-text">Password must be at least 6 characters long.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <div class="alert alert-info">
+                        <small><strong>Note:</strong> Only viewer accounts can be created through registration. Admin accounts are managed separately.</small>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
