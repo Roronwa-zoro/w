@@ -6,10 +6,16 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 
 app = Flask(__name__)
-app.config.from_object('config')
+
+# Configuration for file uploads
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
 
 # Create uploads directory if it doesn't exist
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Database initialization
 def init_db():
@@ -150,7 +156,7 @@ app.jinja_env.globals.update(get_doctor_color=get_doctor_color)
 
 # File upload helper functions
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_latest_image(image_type):
     """Get the latest uploaded image of a specific type"""
